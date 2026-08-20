@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecurePass - Gerador de Senhas</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background:
+                radial-gradient(circle at top left, #3b1d75, transparent 35%),
+                radial-gradient(circle at bottom right, #0d5c75, transparent 35%),
+                #080b14;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 470px;
+            padding: 32px;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 24px;
+            background: rgba(18, 22, 35, 0.78);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 70px rgba(0,0,0,0.45);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #7c3aed, #06b6d4);
+            font-size: 28px;
+            box-shadow: 0 10px 30px rgba(124,58,237,0.35);
+        }
+
+        h1 {
+            margin-top: 15px;
+            font-size: 27px;
+        }
+
+        .subtitle {
+            color: #8e96a8;
+            font-size: 14px;
+            margin-top: 7px;
+        }
+
+        .password-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            border-radius: 14px;
+            background: #0c101b;
+            border: 1px solid #252c3d;
+            margin-bottom: 22px;
+        }
+
+        #password {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: white;
+            font-size: 17px;
+            min-width: 0;
+        }
+
+        .copy-btn {
+            border: none;
+            cursor: pointer;
+            color: white;
+            background: #242b3b;
+            border-radius: 10px;
+            padding: 10px 13px;
+            transition: 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #343d52;
+        }
+
+        .section {
+            margin-bottom: 23px;
+        }
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #cbd1dc;
+        }
+
+        #lengthValue {
+            color: #8b5cf6;
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: #8b5cf6;
+            cursor: pointer;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px;
+            border-radius: 12px;
+            background: #111625;
+            border: 1px solid #252c3d;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .option:hover {
+            border-color: #6841bd;
+        }
+
+        .option input {
+            width: 17px;
+            height: 17px;
+            accent-color: #8b5cf6;
+            cursor: pointer;
+        }
+
+        .option label {
+            font-size: 13px;
+            color: #d2d7e0;
+            cursor: pointer;
+        }
+
+        .strength-container {
+            margin-top: 5px;
+        }
+
+        .strength-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        #strengthText {
+            font-weight: bold;
+        }
+
+        .strength-bar {
+            height: 7px;
+            background: #202638;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        #strengthFill {
+            height: 100%;
+            width: 0%;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+
+        .generate-btn {
+            width: 100%;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            background: linear-gradient(135deg, #7c3aed, #06b6d4);
+            box-shadow: 0 10px 25px rgba(92,57,190,0.25);
+            transition: 0.25s;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(92,57,190,0.35);
+        }
+
+        .generate-btn:active {
+            transform: scale(0.98);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #646d80;
+            font-size: 11px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 24px;
+            }
+
+            .options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container">
+
+        <div class="header">
+            <div class="logo">🔐</div>
+            <h1>SecurePass</h1>
+            <p class="subtitle">
+                Gere senhas fortes e seguras
+            </p>
+        </div>
+
+        <div class="password-box">
+            <input
+                type="text"
+                id="password"
+                readonly
+                value="Clique em gerar"
+            >
+
+            <button class="copy-btn" onclick="copyPassword()">
+                📋
+            </button>
+        </div>
+
+        <div class="section">
+
+            <div class="section-title">
+                <span>Comprimento</span>
+                <span id="lengthValue">16</span>
+            </div>
+
+            <input
+                type="range"
+                id="length"
+                min="6"
+                max="40"
+                value="16"
+            >
+
+        </div>
+
+        <div class="section">
+
+            <div class="section-title">
+                <span>Opções</span>
+            </div>
+
+            <div class="options">
+
+                <div class="option">
+                    <input type="checkbox" id="uppercase" checked>
+                    <label for="uppercase">
+                        ABC Maiúsculas
+                    </label>
+                </div>
+
+                <div class="option">
+                    <input type="checkbox" id="lowercase" checked>
+                    <label for="lowercase">
+                        abc Minúsculas
+                    </label>
+                </div>
+
+                <div class="option">
+                    <input type="checkbox" id="numbers" checked>
+                    <label for="numbers">
+                        123 Números
+                    </label>
+                </div>
+
+                <div class="option">
+                    <input type="checkbox" id="symbols" checked>
+                    <label for="symbols">
+                        @#$ Símbolos
+                    </label>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="section strength-container">
+
+            <div class="strength-info">
+                <span>Força da senha</span>
+                <span id="strengthText">—</span>
+            </div>
+
+            <div class="strength-bar">
+                <div id="strengthFill"></div>
+            </div>
+
+        </div>
+
+        <button class="generate-btn" onclick="generatePassword()">
+            ⚡ Gerar nova senha
+        </button>
+
+        <div class="footer">
+            SecurePass • Gerador de senhas
+        </div>
+
+    </main>
+
+
+    <script>
+
+        const lengthInput = document.getElementById("length");
+        const lengthValue = document.getElementById("lengthValue");
+
+        const passwordInput = document.getElementById("password");
+
+        const uppercase = document.getElementById("uppercase");
+        const lowercase = document.getElementById("lowercase");
+        const numbers = document.getElementById("numbers");
+        const symbols = document.getElementById("symbols");
+
+        const strengthText = document.getElementById("strengthText");
+        const strengthFill = document.getElementById("strengthFill");
+
+
+        lengthInput.addEventListener("input", () => {
+
+            lengthValue.textContent = lengthInput.value;
+
+        });
+
+
+        function generatePassword() {
+
+            const length = Number(lengthInput.value);
+
+            let characters = "";
+
+            if (uppercase.checked) {
+                characters += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            }
+
+            if (lowercase.checked) {
+                characters += "abcdefghijklmnopqrstuvwxyz";
+            }
+
+            if (numbers.checked) {
+                characters += "0123456789";
+            }
+
+            if (symbols.checked) {
+                characters += "!@#$%^&*()_+-=[]{}|;:,.<>?";
+            }
+
+
+            if (characters.length === 0) {
+
+                alert("Selecione pelo menos uma opção.");
+
+                return;
+            }
+
+
+            let password = "";
+
+            const randomValues = new Uint32Array(length);
+
+            crypto.getRandomValues(randomValues);
+
+
+            for (let i = 0; i < length; i++) {
+
+                password += characters[
+                    randomValues[i] % characters.length
+                ];
+
+            }
+
+
+            passwordInput.value = password;
+
+            calculateStrength(password);
+
+        }
+
+
+        function calculateStrength(password) {
+
+            let score = 0;
+
+            const length = password.length;
+
+
+            if (length >= 8) score++;
+
+            if (length >= 12) score++;
+
+            if (length >= 16) score++;
+
+            if (/[A-Z]/.test(password)) score++;
+
+            if (/[a-z]/.test(password)) score++;
+
+            if (/[0-9]/.test(password)) score++;
+
+            if (/[^A-Za-z0-9]/.test(password)) score++;
+
+
+            if (score <= 2) {
+
+                strengthText.textContent = "Fraca";
+                strengthFill.style.width = "30%";
+
+            } else if (score <= 4) {
+
+                strengthText.textContent = "Média";
+                strengthFill.style.width = "60%";
+
+            } else if (score <= 5) {
+
+                strengthText.textContent = "Forte";
+                strengthFill.style.width = "80%";
+
+            } else {
+
+                strengthText.textContent = "Muito forte";
+                strengthFill.style.width = "100%";
+
+            }
+
+        }
+
+
+        async function copyPassword() {
+
+            const password = passwordInput.value;
+
+            if (
+                !password ||
+                password === "Clique em gerar"
+            ) {
+                return;
+            }
+
+
+            try {
+
+                await navigator.clipboard.writeText(password);
+
+                const button =
+                    document.querySelector(".copy-btn");
+
+                button.textContent = "✅";
+
+                setTimeout(() => {
+
+                    button.textContent = "📋";
+
+                }, 1500);
+
+            } catch (error) {
+
+                alert("Não foi possível copiar a senha.");
+
+            }
+
+        }
+
+
+        generatePassword();
+
+    </script>
+
+</body>
+</html>
